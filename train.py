@@ -1,9 +1,4 @@
-"""
-This code is based on DrSleep's framework: https://github.com/DrSleep/tensorflow-deeplab-resnet 
-"""
-
 from __future__ import print_function
-
 import argparse
 import os
 import sys
@@ -19,7 +14,7 @@ from image_reader import ImageReader
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
 BATCH_SIZE = 4
-DATA_DIRECTORY = '/SSD_data/cityscapes_dataset/cityscape'
+DATA_DIRECTORY = './dataset'
 DATA_LIST_PATH = './list/train_list.txt'
 IGNORE_LABEL = 255
 INPUT_SIZE = '713,713'
@@ -110,14 +105,14 @@ def main():
     
     with tf.name_scope("create_inputs"):
         reader = ImageReader(
-            args.data_dir,
-            args.data_list,
-            input_size,
-            args.random_scale,
-            args.random_mirror,
-            args.ignore_label,
-            IMG_MEAN,
-            coord)
+                 args.data_dir,
+                 args.data_list,
+                 input_size,
+                 args.random_scale,
+                 args.random_mirror,
+                 args.ignore_label,
+                 IMG_MEAN,
+                 coord)
         image_batch, label_batch = reader.dequeue(args.batch_size)
     
     net = PSPNet({'data': image_batch}, is_training=True, num_classes=args.num_classes)
