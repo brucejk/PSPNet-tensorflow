@@ -1,5 +1,6 @@
 output/
 model/
+model_/
 train_model/
 datasets/
 *.pyc
