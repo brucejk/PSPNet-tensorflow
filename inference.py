@@ -16,7 +16,7 @@ input_size = [1024, 2048]
 num_classes = 19
 
 SAVE_DIR = './output/'
-SNAPSHOT_DIR = './model/'
+SNAPSHOT_DIR = './train_model/'
 crop_size = [720, 720]
 
 def get_arguments():
@@ -126,7 +126,6 @@ def main():
         print('No checkpoint file found.')
     
     preds = sess.run(pred)
-    print(preds)
     
     msk = decode_labels(preds, num_classes=num_classes)
     im = Image.fromarray(msk[0])
