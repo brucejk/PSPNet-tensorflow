@@ -1,0 +1,6 @@
+output/
+model/
+train_model/
+datasets/
+*.pyc
+*.npz

@@ -126,6 +126,7 @@ def main():
         print('No checkpoint file found.')
     
     preds = sess.run(pred)
+    print(preds)
     
     msk = decode_labels(preds, num_classes=num_classes)
     im = Image.fromarray(msk[0])
