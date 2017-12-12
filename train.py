@@ -172,8 +172,8 @@ def main():
         
     # Set up tf session and initialize variables. 
     config = tf.ConfigProto()
-    # config.gpu_options.allow_growth = True
-    config.gpu_options.per_process_gpu_memory_fraction = 0.8
+    config.gpu_options.allow_growth = True
+    #config.gpu_options.per_process_gpu_memory_fraction = 0.8
     sess = tf.Session(config=config)
     init = tf.global_variables_initializer()
     
