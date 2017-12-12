@@ -1,0 +1,94 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BATCH_SIZE	train.py	/^BATCH_SIZE = 2$/;"	v
+DATA_DIRECTORY	evaluate.py	/^DATA_DIRECTORY = '.\/datasets'$/;"	v
+DATA_DIRECTORY	train.py	/^DATA_DIRECTORY = '.\/datasets'$/;"	v
+DATA_LIST_PATH	evaluate.py	/^DATA_LIST_PATH = '.\/list\/eval_list.txt'$/;"	v
+DATA_LIST_PATH	train.py	/^DATA_LIST_PATH = '.\/list\/train_list.txt'$/;"	v
+DEFAULT_DATAFORMAT	network.py	/^DEFAULT_DATAFORMAT = 'NHWC'$/;"	v
+DEFAULT_PADDING	network.py	/^DEFAULT_PADDING = 'VALID'$/;"	v
+IGNORE_LABEL	train.py	/^IGNORE_LABEL = 255$/;"	v
+IMG_MEAN	evaluate.py	/^IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)$/;"	v
+IMG_MEAN	inference.py	/^IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)$/;"	v
+IMG_MEAN	train.py	/^IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)$/;"	v
+INPUT_SIZE	train.py	/^INPUT_SIZE = '713,713'$/;"	v
+ImageReader	image_reader.py	/^class ImageReader(object):$/;"	c
+LEARNING_RATE	train.py	/^LEARNING_RATE = 1e-3$/;"	v
+MOMENTUM	train.py	/^MOMENTUM = 0.9$/;"	v
+NUM_CLASSES	train.py	/^NUM_CLASSES = 19$/;"	v
+NUM_STEPS	train.py	/^NUM_STEPS = 60001$/;"	v
+Network	network.py	/^class Network(object):$/;"	c
+POWER	train.py	/^POWER = 0.9$/;"	v
+PSPNet	model.py	/^class PSPNet(Network):$/;"	c
+RANDOM_SEED	train.py	/^RANDOM_SEED = 1234$/;"	v
+RESTORE_FROM	train.py	/^RESTORE_FROM = '.\/'$/;"	v
+SAVE_DIR	evaluate.py	/^SAVE_DIR = '.\/output\/'$/;"	v
+SAVE_DIR	inference.py	/^SAVE_DIR = '.\/output\/'$/;"	v
+SAVE_NUM_IMAGES	train.py	/^SAVE_NUM_IMAGES = 4$/;"	v
+SAVE_PRED_EVERY	train.py	/^SAVE_PRED_EVERY = 50$/;"	v
+SNAPSHOT_DIR	evaluate.py	/^SNAPSHOT_DIR = '.\/model\/'$/;"	v
+SNAPSHOT_DIR	inference.py	/^SNAPSHOT_DIR = '.\/train_model\/'$/;"	v
+SNAPSHOT_DIR	train.py	/^SNAPSHOT_DIR = '.\/train_model\/'$/;"	v
+WEIGHT_DECAY	train.py	/^WEIGHT_DECAY = 0.0001$/;"	v
+__init__	image_reader.py	/^    def __init__(self, data_dir, data_list, input_size,$/;"	m	class:ImageReader
+__init__	network.py	/^    def __init__(self, inputs, trainable=True, is_training=False, num_classes=21):$/;"	m	class:Network
+add	network.py	/^    def add(self, inputs, name):$/;"	m	class:Network
+atrous_conv	network.py	/^    def atrous_conv(self,$/;"	m	class:Network
+avg_pool	network.py	/^    def avg_pool(self, input, k_h, k_w, s_h, s_w, name, padding=DEFAULT_PADDING):$/;"	m	class:Network
+batch_normalization	network.py	/^    def batch_normalization(self, input, name, scale_offset=True, relu=False):$/;"	m	class:Network
+calculate_time	evaluate.py	/^def calculate_time(sess, net):$/;"	f
+concat	network.py	/^    def concat(self, inputs, axis, name):$/;"	m	class:Network
+conv	network.py	/^    def conv(self,$/;"	m	class:Network
+crop_size	inference.py	/^crop_size = [720, 720]$/;"	v
+decode_labels	tools.py	/^def decode_labels(mask, num_images=1, num_classes=19):$/;"	f
+dequeue	image_reader.py	/^    def dequeue(self, num_elements):$/;"	m	class:ImageReader
+dropout	network.py	/^    def dropout(self, input, keep_prob, name):$/;"	m	class:Network
+fc	network.py	/^    def fc(self, input, num_out, name, relu=True):$/;"	m	class:Network
+feed	network.py	/^    def feed(self, *args):$/;"	m	class:Network
+get_arguments	evaluate.py	/^def get_arguments():$/;"	f
+get_arguments	inference.py	/^def get_arguments():$/;"	f
+get_arguments	train.py	/^def get_arguments():$/;"	f
+get_layer_name	network.py	/^    def get_layer_name(self):$/;"	m	class:Network
+get_output	network.py	/^    def get_output(self):$/;"	m	class:Network
+get_unique_name	network.py	/^    def get_unique_name(self, prefix):$/;"	m	class:Network
+ignore_label	evaluate.py	/^ignore_label = 255 # Don't care label$/;"	v
+image_mirroring	image_reader.py	/^def image_mirroring(img, label):$/;"	f
+image_scaling	image_reader.py	/^def image_scaling(img, label):$/;"	f
+input_size	evaluate.py	/^input_size = [1024, 2048]$/;"	v
+input_size	inference.py	/^input_size = [1024, 2048]$/;"	v
+label_colours	tools.py	/^label_colours = [(128, 64, 128), (244, 35, 231), (69, 69, 69)$/;"	v
+layer	network.py	/^def layer(op):$/;"	f
+layer_decorated	network.py	/^    def layer_decorated(self, *args, **kwargs):$/;"	f	function:layer
+load	evaluate.py	/^def load(saver, sess, ckpt_path):$/;"	f
+load	inference.py	/^def load(saver, sess, ckpt_path):$/;"	f
+load	network.py	/^    def load(self, data_path, session, ignore_missing=False):$/;"	m	class:Network
+load	train.py	/^def load(saver, sess, ckpt_path):$/;"	f
+load_img	inference.py	/^def load_img(img_path):$/;"	f
+lrn	network.py	/^    def lrn(self, input, radius, alpha, beta, name, bias=1.0):$/;"	m	class:Network
+main	evaluate.py	/^def main():$/;"	f
+main	inference.py	/^def main():$/;"	f
+main	train.py	/^def main():$/;"	f
+make_var	network.py	/^    def make_var(self, name, shape):$/;"	m	class:Network
+max_pool	network.py	/^    def max_pool(self, input, k_h, k_w, s_h, s_w, name, padding=DEFAULT_PADDING):$/;"	m	class:Network
+num_classes	evaluate.py	/^num_classes = 19$/;"	v
+num_classes	inference.py	/^num_classes = 19$/;"	v
+num_steps	evaluate.py	/^num_steps = 500 # numbers of image in validation set$/;"	v
+prepare_label	tools.py	/^def prepare_label(input_batch, new_size, num_classes, one_hot=True):$/;"	f
+preprocess	inference.py	/^def preprocess(img, h, w):$/;"	f
+random_crop_and_pad_image_and_labels	image_reader.py	/^def random_crop_and_pad_image_and_labels(image, label, crop_h, crop_w, ignore_label=255):$/;"	f
+read_images_from_disk	image_reader.py	/^def read_images_from_disk(input_queue, input_size, random_scale, random_mirror, ignore_label, img_mean): # optional pre-processing arguments$/;"	f
+read_labeled_image_list	image_reader.py	/^def read_labeled_image_list(data_dir, data_list):$/;"	f
+relu	network.py	/^    def relu(self, input, name):$/;"	m	class:Network
+resize_bilinear	network.py	/^    def resize_bilinear(self, input, size, name):$/;"	m	class:Network
+save	inference.py	/^def save(saver, sess, logdir, step):$/;"	f
+save	train.py	/^def save(saver, sess, logdir, step):$/;"	f
+setup	model.py	/^    def setup(self, is_training, num_classes):$/;"	m	class:PSPNet
+setup	network.py	/^    def setup(self, is_training):$/;"	m	class:Network
+softmax	network.py	/^    def softmax(self, input, name):$/;"	m	class:Network
+time_list	evaluate.py	/^time_list = []$/;"	v
+validate_padding	network.py	/^    def validate_padding(self, padding):$/;"	m	class:Network
+zero_padding	network.py	/^    def zero_padding(self, input, paddings, name):$/;"	m	class:Network
