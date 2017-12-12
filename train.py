@@ -13,7 +13,7 @@ from image_reader import ImageReader
 
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
-BATCH_SIZE = 2
+BATCH_SIZE = 1
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/train_list.txt'
 IGNORE_LABEL = 255
@@ -101,7 +101,7 @@ def main():
     
     tf.set_random_seed(args.random_seed)
     
-    coord = tf.train.Coordinator()
+    #coord = tf.train.Coordinator()
     
     with tf.name_scope("create_inputs"):
         reader = ImageReader(
@@ -172,7 +172,8 @@ def main():
         
     # Set up tf session and initialize variables. 
     config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
+    # config.gpu_options.allow_growth = True
+    config.gpu_options.per_process_gpu_memory_fraction = 0.8
     sess = tf.Session(config=config)
     init = tf.global_variables_initializer()
     
@@ -191,7 +192,7 @@ def main():
         load_step = 0
 
     # Start queue threads.
-    threads = tf.train.start_queue_runners(coord=coord, sess=sess)
+    #threads = tf.train.start_queue_runners(coord=coord, sess=sess)
 
     # Iterate over training steps.
     for step in range(args.num_steps):
@@ -206,8 +207,8 @@ def main():
         duration = time.time() - start_time
         print('step {:d} \t loss = {:.3f}, ({:.3f} sec/step)'.format(step, loss_value, duration))
         
-    coord.request_stop()
-    coord.join(threads)
+    #coord.request_stop()
+    #coord.join(threads)
     
 if __name__ == '__main__':
     main()
