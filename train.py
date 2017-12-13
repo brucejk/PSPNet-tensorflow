@@ -13,7 +13,7 @@ from image_reader import ImageReader
 
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
-BATCH_SIZE = 1
+BATCH_SIZE = 2
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/train_list.txt'
 IGNORE_LABEL = 255

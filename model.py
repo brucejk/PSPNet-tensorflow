@@ -436,6 +436,9 @@ class PSPNet(Network):
         conv5_3 = self.layers['conv5_3/relu']
         shape = tf.shape(conv5_3)[1:3]
 
+        
+        # Paramid Polling Module
+
         (self.feed('conv5_3/relu')
              .avg_pool(90, 90, 90, 90, name='conv5_3_pool1')
              .conv(1, 1, 512, 1, 1, biased=False, relu=False, name='conv5_3_pool1_conv')
