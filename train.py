@@ -27,6 +27,7 @@ RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
 SNAPSHOT_DIR = './train_changed_input_block/'
+LOG_DIR = './tensorboard_log'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
@@ -71,6 +72,8 @@ def get_arguments():
                         help="Save summaries and checkpoint every often.")
     parser.add_argument("--snapshot-dir", type=str, default=SNAPSHOT_DIR,
                         help="Where to save snapshots of the model.")
+    parser.add_argument("--tensorboard-dir", type=str, default=LOG_DIR,
+                        help="Where to save summaries.")
     parser.add_argument("--weight-decay", type=float, default=WEIGHT_DECAY,
                         help="Regularisation parameter for L2-loss.")
     parser.add_argument("--update-mean-var", action="store_true",
@@ -142,11 +145,13 @@ def main():
     loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=prediction, labels=gt)
     l2_losses = [args.weight_decay * tf.nn.l2_loss(v) for v in tf.trainable_variables() if 'weights' in v.name]
     reduced_loss = tf.reduce_mean(loss) + tf.add_n(l2_losses)
+    tf.summary.scalar('reduced_loss', reduced_loss)
 
     # Using Poly learning rate policy 
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
     learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
+    tf.summary.scalar('learning_rate', learning_rate)
     
     # Gets moving_mean and moving_variance update operations from tf.GraphKeys.UPDATE_OPS
     if args.update_mean_var == False:
@@ -174,9 +179,10 @@ def main():
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     #config.gpu_options.per_process_gpu_memory_fraction = 0.8
+
     sess = tf.Session(config=config)
+    train_writer = tf.summary.FileWriter( args.tensorboard_dir+ '/train', sess.graph)
     init = tf.global_variables_initializer()
-    
     sess.run(init)
     
     # Saver for storing checkpoints of the model.
