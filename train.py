@@ -101,7 +101,7 @@ def main():
     
     tf.set_random_seed(args.random_seed)
     
-    #coord = tf.train.Coordinator()
+    coord = tf.train.Coordinator()
     
     with tf.name_scope("create_inputs"):
         reader = ImageReader(
@@ -111,8 +111,8 @@ def main():
                  args.random_scale,
                  args.random_mirror,
                  args.ignore_label,
-                 IMG_MEAN)#,
-                 #coord)
+                 IMG_MEAN,
+                 coord)
         image_batch, label_batch = reader.dequeue(args.batch_size)
     
     net = PSPNet({'data': image_batch}, is_training=True, num_classes=args.num_classes)
@@ -192,7 +192,7 @@ def main():
         load_step = 0
 
     # Start queue threads.
-    #threads = tf.train.start_queue_runners(coord=coord, sess=sess)
+    threads = tf.train.start_queue_runners(coord=coord, sess=sess)
 
     # Iterate over training steps.
     for step in range(args.num_steps):
@@ -207,8 +207,8 @@ def main():
         duration = time.time() - start_time
         print('step {:d} \t loss = {:.3f}, ({:.3f} sec/step)'.format(step, loss_value, duration))
         
-    #coord.request_stop()
-    #coord.join(threads)
+    coord.request_stop()
+    coord.join(threads)
     
 if __name__ == '__main__':
     main()

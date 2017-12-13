@@ -97,12 +97,12 @@ class ImageReader(object):
     '''
 
     def __init__(self, data_dir, data_list, input_size,
-                  random_scale, random_mirror, ignore_label, img_mean):
+                  random_scale, random_mirror, ignore_label, img_mean, coord):
 
         self.data_dir = data_dir
         self.data_list = data_list
         self.input_size = input_size
-        #self.coord = coord
+        self.coord = coord
 
         self.image_list, self.label_list = read_labeled_image_list(self.data_dir, self.data_list)
         self.images = tf.convert_to_tensor(self.image_list, dtype=tf.string)
