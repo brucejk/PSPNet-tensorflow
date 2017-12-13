@@ -26,7 +26,7 @@ POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
-SNAPSHOT_DIR = './train_model/'
+SNAPSHOT_DIR = './train_test/'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
@@ -194,7 +194,7 @@ def main():
     # Start queue threads.
     threads = tf.train.start_queue_runners(coord=coord, sess=sess)
 
-    # Iterate over training steps.
+    # Itrate over training steps.
     for step in range(args.num_steps):
         start_time = time.time()
         
