@@ -1,9 +1,9 @@
-output/
-output_/
-model/
-list/
-model_/
-train_model/
-datasets/
+output/*
+output_/*
+model/*
+list/*
+model_/*
+train_model/*
+datasets/*
 *.pyc
 *.npz
