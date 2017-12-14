@@ -1,6 +1,7 @@
 output/
 output_/
 model/
+list/
 model_/
 train_model/
 datasets/
