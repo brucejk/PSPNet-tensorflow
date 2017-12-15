@@ -21,7 +21,7 @@ INPUT_SIZE = '713,713'
 LEARNING_RATE = 1e-3
 MOMENTUM = 0.9
 NUM_CLASSES = 19
-NUM_STEPS = 30001
+NUM_STEPS = 50001
 POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
@@ -30,7 +30,7 @@ SNAPSHOT_DIR = './train_input_block_cross_pyramid/'
 LOG_DIR = './tensorboard_log'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
-
+SAVE_GRAPH = 10 
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="DeepLab-ResNet Network")
@@ -69,6 +69,8 @@ def get_arguments():
     parser.add_argument("--save-num-images", type=int, default=SAVE_NUM_IMAGES,
                         help="How many images to save.")
     parser.add_argument("--save-pred-every", type=int, default=SAVE_PRED_EVERY,
+                        help="Save summaries and checkpoint every often.")
+    parser.add_argument("--save-graph", type=int, default=SAVE_GRAPH,
                         help="Save summaries and checkpoint every often.")
     parser.add_argument("--snapshot-dir", type=str, default=SNAPSHOT_DIR,
                         help="Where to save snapshots of the model.")
@@ -181,6 +183,7 @@ def main():
     #config.gpu_options.per_process_gpu_memory_fraction = 0.8
 
     sess = tf.Session(config=config)
+    merged = tf.summary.merge_all()
     train_writer = tf.summary.FileWriter( args.tensorboard_dir+ '/train', sess.graph)
     init = tf.global_variables_initializer()
     sess.run(init)
@@ -203,11 +206,13 @@ def main():
     # Itrate over training steps.
     for step in range(args.num_steps):
         start_time = time.time()
-        
         feed_dict = {step_ph: step}
         if step % args.save_pred_every == 0:
             loss_value, _ = sess.run([reduced_loss, train_op], feed_dict=feed_dict)
             save(saver, sess, args.snapshot_dir, step)
+        if step % args.save_graph == 0:
+            summary, _ = sess.run([merged, train_op], feed_dict=feed_dict)
+            train_writer.add_summary(summary, step)
         else:
             loss_value, _ = sess.run([reduced_loss, train_op], feed_dict=feed_dict)
         duration = time.time() - start_time
@@ -215,6 +220,7 @@ def main():
         
     coord.request_stop()
     coord.join(threads)
+    train_writer.close()
     
 if __name__ == '__main__':
     main()
