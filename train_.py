@@ -7,13 +7,13 @@ import time
 import tensorflow as tf
 import numpy as np
 
-from model import PSPNet
+from model_ import PSPNet
 from tools import decode_labels, prepare_label
 from image_reader import ImageReader
 
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
-BATCH_SIZE = 1
+BATCH_SIZE = 2
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/train_list.txt'
 IGNORE_LABEL = 255
@@ -21,13 +21,13 @@ INPUT_SIZE = '713,713'
 LEARNING_RATE = 1e-3
 MOMENTUM = 0.9
 NUM_CLASSES = 19
-NUM_STEPS = 90001
+NUM_STEPS = 50001
 POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
-SNAPSHOT_DIR = './train_input_block_cross_pyramid/'
-# SNAPSHOT_DIR = './train_why/'
+# SNAPSHOT_DIR = './train_input_block_cross_pyramid/'
+SNAPSHOT_DIR = './train_why/'
 LOG_DIR = './tensorboard_log'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50

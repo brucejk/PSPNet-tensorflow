@@ -8,7 +8,7 @@ from PIL import Image
 import tensorflow as tf
 import numpy as np
 
-from model import PSPNet
+from model_ import PSPNet
 from tools import decode_labels
 from image_reader import ImageReader
 
@@ -16,7 +16,7 @@ IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 input_size = [1024, 2048]
 
 SAVE_DIR = './output/'
-SNAPSHOT_DIR = './train_input_block_cross_pyramid/'
+SNAPSHOT_DIR = './model/'
 
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/eval_list.txt'
@@ -134,7 +134,7 @@ def main():
     # Start queue threads.
     threads = tf.train.start_queue_runners(coord=coord, sess=sess)
 
-    for step in range(load_step, num_steps):
+    for step in range(loat_step, num_steps):
         preds, _ = sess.run([pred, update_op])
         
         if step > 0 and args.measure_time:
