@@ -14,7 +14,7 @@ from image_reader import ImageReader
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
 TRAIN_RESNET = False
-BATCH_SIZE = 4
+BATCH_SIZE = 8
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/train_list.txt'
 IGNORE_LABEL = 255
