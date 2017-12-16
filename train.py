@@ -13,7 +13,8 @@ from image_reader import ImageReader
 
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
-BATCH_SIZE = 2
+TRAIN_RESNET = False
+BATCH_SIZE = 4
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/train_list.txt'
 IGNORE_LABEL = 255
@@ -26,13 +27,15 @@ POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
-SNAPSHOT_DIR = './train_model/'
+SNAPSHOT_DIR = './ganlu_model/'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="DeepLab-ResNet Network")
+    parser.add_argument("--train-resnet", type=bool, default=True,
+			help="Whether to fine-tune ResNet weights.")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE,
                         help="Number of images sent to the network in one step.")
     parser.add_argument("--data-dir", type=str, default=DATA_DIRECTORY,
@@ -115,21 +118,22 @@ def main():
                  coord)
         image_batch, label_batch = reader.dequeue(args.batch_size)
     
-    net = PSPNet({'data': image_batch}, is_training=True, num_classes=args.num_classes)
+    net = PSPNet({'data': image_batch}, is_training=False, num_classes=args.num_classes)
     
     raw_output = net.layers['conv6']
-
+    
     # According from the prototxt in Caffe implement, learning rate must multiply by 10.0 in pyramid module
-    fc_list = ['conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_3_pool3_conv', 'conv5_3_pool6_conv', 'conv6', 'conv5_4']
-    restore_var = [v for v in tf.global_variables()]
+    fc_list = ['conv4_24_pool1_conv', 'conv4_24_pool2_conv', 'conv4_24_pool3_conv',
+    'conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_3_pool3_conv', 'conv5_3_pool6_conv', 'conv6', 'conv5_4']
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
+    restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
     fc_trainable = [v for v in all_trainable if v.name.split('/')[0] in fc_list]
     conv_trainable = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # lr * 1.0
     fc_w_trainable = [v for v in fc_trainable if 'weights' in v.name] # lr * 10.0
     fc_b_trainable = [v for v in fc_trainable if 'biases' in v.name] # lr * 20.0
     assert(len(all_trainable) == len(fc_trainable) + len(conv_trainable))
     assert(len(fc_trainable) == len(fc_w_trainable) + len(fc_b_trainable))
-    
+  
     # Predictions: ignoring all predictions with labels greater or equal than n_classes
     raw_prediction = tf.reshape(raw_output, [-1, args.num_classes])
     label_proc = prepare_label(label_batch, tf.stack(raw_output.get_shape()[1:3]), num_classes=args.num_classes, one_hot=False) # [batch_size, h, w]
@@ -140,7 +144,10 @@ def main():
                                                                                             
     # Pixel-wise softmax loss.
     loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=prediction, labels=gt)
-    l2_losses = [args.weight_decay * tf.nn.l2_loss(v) for v in tf.trainable_variables() if 'weights' in v.name]
+    if args.train_resnet == True:    
+	l2_losses = [args.weight_decay * tf.nn.l2_loss(v) for v in tf.trainable_variables() if 'weights' in v.name]
+    else:
+	l2_losses = [args.weight_decay * tf.nn.l2_loss(v) for v in fc_w_trainable]
     reduced_loss = tf.reduce_mean(loss) + tf.add_n(l2_losses)
 
     # Using Poly learning rate policy 
@@ -155,21 +162,29 @@ def main():
         update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 
     with tf.control_dependencies(update_ops):
-        opt_conv = tf.train.MomentumOptimizer(learning_rate, args.momentum)
         opt_fc_w = tf.train.MomentumOptimizer(learning_rate * 10.0, args.momentum)
         opt_fc_b = tf.train.MomentumOptimizer(learning_rate * 20.0, args.momentum)
 
-        grads = tf.gradients(reduced_loss, conv_trainable + fc_w_trainable + fc_b_trainable)
-        grads_conv = grads[:len(conv_trainable)]
-        grads_fc_w = grads[len(conv_trainable) : (len(conv_trainable) + len(fc_w_trainable))]
-        grads_fc_b = grads[(len(conv_trainable) + len(fc_w_trainable)):]
+	if args.train_resnet == True:
+            opt_conv = tf.train.MomentumOptimizer(learning_rate, args.momentum)
+	    grads = tf.gradients(reduced_loss, conv_trainable + fc_w_trainable + fc_b_trainable)
+	    grads_conv = grads[:len(conv_trainable)]
+	    grads_fc_w = grads[len(conv_trainable) : (len(conv_trainable) + len(fc_w_trainable))]
+	    grads_fc_b = grads[(len(conv_trainable) + len(fc_w_trainable)):]
+	    
+	    train_op_conv = opt_conv.apply_gradients(zip(grads_conv, conv_trainable))
+            train_op_fc_w = opt_fc_w.apply_gradients(zip(grads_fc_w, fc_w_trainable))
+            train_op_fc_b = opt_fc_b.apply_gradients(zip(grads_fc_b, fc_b_trainable))
+            train_op = tf.group(train_op_fc_w, train_op_fc_b)
+	else:
+	    grads = tf.gradients(reduced_loss, fc_w_trainable + fc_b_trainable)
+            grads_fc_w = grads[:len(fc_w_trainable)]
+            grads_fc_b = grads[len(fc_w_trainable):]
 
-        train_op_conv = opt_conv.apply_gradients(zip(grads_conv, conv_trainable))
-        train_op_fc_w = opt_fc_w.apply_gradients(zip(grads_fc_w, fc_w_trainable))
-        train_op_fc_b = opt_fc_b.apply_gradients(zip(grads_fc_b, fc_b_trainable))
+            train_op_fc_w = opt_fc_w.apply_gradients(zip(grads_fc_w, fc_w_trainable))
+            train_op_fc_b = opt_fc_b.apply_gradients(zip(grads_fc_b, fc_b_trainable))
+            train_op = tf.group(train_op_fc_w, train_op_fc_b)
 
-        train_op = tf.group(train_op_conv, train_op_fc_w, train_op_fc_b)
-        
     # Set up tf session and initialize variables. 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -180,11 +195,11 @@ def main():
     
     # Saver for storing checkpoints of the model.
     saver = tf.train.Saver(var_list=tf.global_variables(), max_to_keep=10)
-
+    
     ckpt = tf.train.get_checkpoint_state(SNAPSHOT_DIR)
     if ckpt and ckpt.model_checkpoint_path:
         loader = tf.train.Saver(var_list=restore_var)
-        load_step = int(os.path.basename(ckpt.model_checkpoint_path).split('-')[1])
+	load_step = int(os.path.basename(ckpt.model_checkpoint_path).split('-')[1])
         load(loader, sess, ckpt.model_checkpoint_path)
     else:
         print('No checkpoint file found.')

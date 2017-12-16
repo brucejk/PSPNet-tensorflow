@@ -16,7 +16,7 @@ IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 input_size = [1024, 2048]
 
 SAVE_DIR = './output/'
-SNAPSHOT_DIR = './model/'
+SNAPSHOT_DIR = './ganlu_model/'
 
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/eval_list.txt'
