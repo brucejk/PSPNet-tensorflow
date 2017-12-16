@@ -134,7 +134,7 @@ def main():
     # Start queue threads.
     threads = tf.train.start_queue_runners(coord=coord, sess=sess)
 
-    for step in range(loat_step, num_steps):
+    for step in range(num_steps):
         preds, _ = sess.run([pred, update_op])
         
         if step > 0 and args.measure_time:
@@ -144,7 +144,6 @@ def main():
             print('Finish {0}/{1}'.format(step, num_steps))
             print('step {0} mIoU: {1}'.format(step, sess.run(mIoU)))
 
-    print('step {0} mIoU: {1}'.format(step, sess.run(mIoU)))
 
     coord.request_stop()
     coord.join(threads)

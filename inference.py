@@ -16,7 +16,7 @@ input_size = [1024, 2048]
 num_classes = 19
 
 SAVE_DIR = './output/'
-SNAPSHOT_DIR = './train_model/'
+SNAPSHOT_DIR = './train_input_block_cross_pyramid/'
 crop_size = [720, 720]
 
 def get_arguments():
