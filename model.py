@@ -476,7 +476,7 @@ class PSPNet(Network):
         #     .avg_pool(15, 15, 15, 15, name='conv5_3_pool6')
         #     .conv(1, 1, 512, 1, 1, biased=False, relu=False, name='conv5_3_pool6_conv')
         #     .batch_normalization(relu=True, name='conv5_3_pool6_conv_bn')
-        #     .resize_bilinear(shape, name='conv5_3_pool6_interp'))
+        ##     .resize_bilinear(shape, name='conv5_3_pool6_interp'))
 
         (self.feed('conv4_23/relu',
 		   'conv4_24_pool3_interp',
