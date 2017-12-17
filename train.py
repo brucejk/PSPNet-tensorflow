@@ -131,8 +131,10 @@ def main():
     raw_output = net.layers['conv6']
     
     # According from the prototxt in Caffe implement, learning rate must multiply by 10.0 in pyramid module
-    fc_list = ['conv4_24_pool1_conv', 'conv4_24_pool2_conv', 'conv4_24_pool3_conv',
-    'conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_3_pool3_conv', 'conv5_3_pool6_conv', 'conv6', 'conv5_4']
+    fc_list = ['conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_4',
+               'conv6_4_concat1_pool_conv', 'conv6_4_concat2_pool_conv',
+               'conv6_4_concat3_pool_conv', 'conv6_4_concat4_pool_conv', 'conv6_4',
+               'conv7_4_pool1_conv',' conv7_4_pool2_conv', 'conv7_4', 'conv6']
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
     restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
     fc_trainable = [v for v in all_trainable if v.name.split('/')[0] in fc_list]
@@ -163,7 +165,7 @@ def main():
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
     learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
-     tf.summary.scalar('learning_rate', learning_rate)
+    tf.summary.scalar('learning_rate', learning_rate)
     
     # Gets moving_mean and moving_variance update operations from tf.GraphKeys.UPDATE_OPS
     if args.update_mean_var == False:
