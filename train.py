@@ -13,6 +13,7 @@ from image_reader import ImageReader
 
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
+LOAD_ALL = 1
 TRAIN_RESNET = False
 BATCH_SIZE = 2
 DATA_DIRECTORY = './datasets'
@@ -123,10 +124,7 @@ def main():
                  args.random_scale,
                  args.random_mirror,
                  args.ignore_label,
-                 IMG_MEAN,
-                 coord)
-        image_batch, label_batch = reader.dequeue(args.batch_size)
-    
+                 IMG_MEAN, coord) image_batch, label_batch = reader.dequeue(args.batch_size) 
     net = PSPNet({'data': image_batch}, is_training=False, num_classes=args.num_classes)
     
     raw_output = net.layers['conv6']
@@ -139,7 +137,10 @@ def main():
                'conv6_4_concat3_pool_conv', 'conv6_4_concat4_pool_conv', 'conv7_4',
                'conv7_4_pool1_conv','conv7_4_pool2_conv', 'conv8_4', 'conv6']
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
-    restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
+    if LOAD_ALL == 1:
+        restore_var = [v for v in tf.global_variables()]
+    else:
+        restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
     fc_trainable = [v for v in all_trainable if v.name.split('/')[0] in fc_list]
     conv_trainable = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # lr * 1.0
     fc_w_trainable = [v for v in fc_trainable if 'weights' in v.name] # lr * 10.0
