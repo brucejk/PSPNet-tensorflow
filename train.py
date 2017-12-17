@@ -27,13 +27,13 @@ POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
-SNAPSHOT_DIR = './simple_model/'
+SNAPSHOT_DIR = './232_model/'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
 SAVE_GRAPH = 10 
 LOG_DIR = './tensorboard_log'
-EVNET = '/bruce_simple'
+EVNET = '/bruce_232'
 
 
 def get_arguments():
