@@ -31,8 +31,8 @@ SNAPSHOT_DIR = './ganlu_model/'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
-SAVE_GRAPH = 10 
-LOG_DIR = './tensorboard_log_ganlu'
+#SAVE_GRAPH = 10 
+#LOG_DIR = './tensorboard_log_ganlu'
 
 
 def get_arguments():
@@ -84,10 +84,10 @@ def get_arguments():
     parser.add_argument("--train-beta-gamma", action="store_true",
                         help="whether to train beta & gamma in bn layer")
 
-    parser.add_argument("--tensorboard-dir", type=str, default=LOG_DIR,
-                        help="Where to save summaries.")
-    parser.add_argument("--save-graph", type=int, default=SAVE_GRAPH,
-                        help="Save summaries and checkpoint every often.")
+    #parser.add_argument("--tensorboard-dir", type=str, default=LOG_DIR,
+    #                    help="Where to save summaries.")
+    #parser.add_argument("--save-graph", type=int, default=SAVE_GRAPH,
+    #                    help="Save summaries and checkpoint every often.")
     return parser.parse_args()
 
 def save(saver, sess, logdir, step):
@@ -163,7 +163,7 @@ def main():
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
     learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
-     tf.summary.scalar('learning_rate', learning_rate)
+    #tf.summary.scalar('learning_rate', learning_rate)
     
     # Gets moving_mean and moving_variance update operations from tf.GraphKeys.UPDATE_OPS
     if args.update_mean_var == False:
@@ -198,9 +198,9 @@ def main():
     # Set up tf session and initialize variables. 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
-    merged = tf.summary.merge_all()
+    #merged = tf.summary.merge_all()
     sess = tf.Session(config=config)
-    train_writer = tf.summary.FileWriter( args.tensorboard_dir+ '/train', sess.graph)
+    #train_writer = tf.summary.FileWriter( args.tensorboard_dir+ '/train', sess.graph)
     init = tf.global_variables_initializer()
     
     sess.run(init)
@@ -228,9 +228,9 @@ def main():
         if step % args.save_pred_every == 0:
             loss_value, _ = sess.run([reduced_loss, train_op], feed_dict=feed_dict)
             save(saver, sess, args.snapshot_dir, step)
-	if step % args.save_graph == 0:
-	    summary, _ = sess.run([merged, train_op], feed_dict=feed_dict)
-	    train_writer.add_summary(summary, step)
+	#if step % args.save_graph == 0:
+	 #   summary, _ = sess.run([merged, train_op], feed_dict=feed_dict)
+	  #  train_writer.add_summary(summary, step)
         else:
             loss_value, _ = sess.run([reduced_loss, train_op], feed_dict=feed_dict)
         duration = time.time() - start_time
@@ -238,7 +238,7 @@ def main():
         
     coord.request_stop()
     coord.join(threads)
-    train_writer.close()
+    #train_writer.close()
     
 if __name__ == '__main__':
     main()
