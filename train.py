@@ -32,7 +32,8 @@ SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
 SAVE_GRAPH = 10 
-LOG_DIR = './tensorboard_log_bruce242'
+LOG_DIR = './tensorboard_log'
+EVENT = '/bruce242'
 
 
 def get_arguments():
@@ -203,7 +204,7 @@ def main():
     config.gpu_options.allow_growth = True
     merged = tf.summary.merge_all()
     sess = tf.Session(config=config)
-    train_writer = tf.summary.FileWriter( args.tensorboard_dir+ '/train', sess.graph)
+    train_writer = tf.summary.FileWriter( args.tensorboard_dir + EVENT , sess.graph)
     init = tf.global_variables_initializer()
     sess.run(init)
     
