@@ -3,3 +3,4 @@ train_model/
 datasets/
 *.pyc
 *.npz
+ctags_file
