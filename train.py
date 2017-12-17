@@ -135,7 +135,7 @@ def main():
     fc_list = ['conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_4',
                'conv6_4_concat1_pool_conv', 
                'conv6_4_concat3_pool_conv', 'conv6_4_concat4_pool_conv', 'conv6_4',
-               'conv7_4_pool1_conv',' conv7_4_pool2_conv', 'conv7_4', 'conv6']
+               'conv7_4_pool1_conv','conv7_4_pool2_conv', 'conv7_4', 'conv6']
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
     restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
     fc_trainable = [v for v in all_trainable if v.name.split('/')[0] in fc_list]
