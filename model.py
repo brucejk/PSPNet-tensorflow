@@ -436,15 +436,24 @@ class PSPNet(Network):
         conv5_3 = self.layers['conv5_3/relu']
         shape = tf.shape(conv5_3)[1:3]
 
+
+        (self.feed('conv5_1/relu',
+                   'conv5_2_1x1_increase_bn')
+             .add(name='conv6_3')
+             .relu(name='conv6_3/relu'))
+
+        conv6_3 = self.layers['conv6_3/relu']
+        shape_conv6 = tf.shape(conv6_3)[1:3]
+
         #### 2
         (self.feed('conv5_3/relu')
-             .avg_pool(90, 90, 90, 90, name='conv5_3_pool1')
+             .avg_pool(15, 15, 15, 15, name='conv5_3_pool1')
              .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv5_3_pool1_conv')
              .batch_normalization(relu=True, name='conv5_3_pool1_conv_bn')
              .resize_bilinear(shape, name='conv5_3_pool1_interp'))
 
         (self.feed('conv5_3/relu')
-             .avg_pool(45, 45, 45, 45, name='conv5_3_pool2')
+             .avg_pool(30, 30, 30, 30, name='conv5_3_pool2')
              .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv5_3_pool2_conv')
              .batch_normalization(relu=True, name='conv5_3_pool2_conv_bn')
              .resize_bilinear(shape, name='conv5_3_pool2_interp'))
@@ -457,6 +466,29 @@ class PSPNet(Network):
              .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv5_4')
              .batch_normalization(relu=True, name='conv5_4_bn')
              .resize_bilinear(shape, name='conv5_4_bn_interp'))
+
+
+        #### 2
+        (self.feed('conv6_3/relu')
+             .avg_pool(90, 90, 90, 90, name='conv6_3_pool1')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv6_3_pool1_conv')
+             .batch_normalization(relu=True, name='conv6_3_pool1_conv_bn')
+             .resize_bilinear(shape_conv6, name='conv6_3_pool1_interp'))
+
+        (self.feed('conv6_3/relu')
+             .avg_pool(45, 45, 45, 45, name='conv6_3_pool2')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv6_3_pool2_conv')
+             .batch_normalization(relu=True, name='conv6_3_pool2_conv_bn')
+             .resize_bilinear(shape_conv6, name='conv6_3_pool2_interp'))
+
+
+        (self.feed('conv6_3/relu',
+                   'conv6_3_pool2_interp',
+                   'conv6_3_pool1_interp')
+             .concat(axis=-1, name='conv6_3_concat')
+             .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv6_4')
+             .batch_normalization(relu=True, name='conv6_4_bn')
+             .resize_bilinear(shape_conv6, name='conv6_4_bn_interp'))
 
         #### 4
         (self.feed('conv5_3/relu', 
@@ -490,8 +522,8 @@ class PSPNet(Network):
                    'conv6_4_pool3_interp',
                    'conv6_4_pool4_interp')
              .concat(axis=-1, name='conv6_3_concat')
-             .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv6_4')
-             .batch_normalization(relu=True, name='conv6_4_bn')
+             .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv7_4')
+             .batch_normalization(relu=True, name='conv7_4_bn')
              .resize_bilinear(shape, name='con7_4_pool4_interp'))
 
         #### 2
@@ -516,6 +548,6 @@ class PSPNet(Network):
                    'conv7_4_pool1_interp',
                    'conv7_4_pool2_interp')
              .concat(axis=-1, name='conv8_3_concat')
-             .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv7_4')
-             .batch_normalization(relu=True, name='conv7_4_bn')
+             .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv8_4')
+             .batch_normalization(relu=True, name='conv8_4_bn')
              .conv(1, 1, num_classes, 1, 1, biased=True, relu=False, name='conv6'))

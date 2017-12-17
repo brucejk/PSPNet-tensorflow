@@ -14,7 +14,7 @@ from image_reader import ImageReader
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
 TRAIN_RESNET = False
-BATCH_SIZE = 8
+BATCH_SIZE = 2
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/train_list.txt'
 IGNORE_LABEL = 255
@@ -27,12 +27,13 @@ POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
-SNAPSHOT_DIR = './232_model/'
+SNAPSHOT_DIR = './simple_model/'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
 SAVE_GRAPH = 10 
-LOG_DIR = './tensorboard_log_bruce232'
+LOG_DIR = './tensorboard_log'
+EVNET = '/bruce_simple'
 
 
 def get_arguments():
@@ -133,9 +134,10 @@ def main():
     # According from the prototxt in Caffe implement, learning rate must multiply by 10.0 in pyramid module
 
     fc_list = ['conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_4',
+               'conv6_3_pool1_conv', 'conv6_3_pool2_conv', 'conv6_4',
                'conv6_4_concat1_pool_conv', 
-               'conv6_4_concat3_pool_conv', 'conv6_4_concat4_pool_conv', 'conv6_4',
-               'conv7_4_pool1_conv','conv7_4_pool2_conv', 'conv7_4', 'conv6']
+               'conv6_4_concat3_pool_conv', 'conv6_4_concat4_pool_conv', 'conv7_4',
+               'conv7_4_pool1_conv','conv7_4_pool2_conv', 'conv8_4', 'conv6']
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
     restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
     fc_trainable = [v for v in all_trainable if v.name.split('/')[0] in fc_list]
@@ -203,7 +205,7 @@ def main():
     config.gpu_options.allow_growth = True
     merged = tf.summary.merge_all()
     sess = tf.Session(config=config)
-    train_writer = tf.summary.FileWriter( args.tensorboard_dir+ '/train', sess.graph)
+    train_writer = tf.summary.FileWriter(args.tensorboard_dir + EVNET, sess.graph)
     init = tf.global_variables_initializer()
     sess.run(init)
     
