@@ -436,36 +436,95 @@ class PSPNet(Network):
         conv5_3 = self.layers['conv5_3/relu']
         shape = tf.shape(conv5_3)[1:3]
 
+        #### 2
         (self.feed('conv5_3/relu')
              .avg_pool(90, 90, 90, 90, name='conv5_3_pool1')
-             .conv(1, 1, 512, 1, 1, biased=False, relu=False, name='conv5_3_pool1_conv')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv5_3_pool1_conv')
              .batch_normalization(relu=True, name='conv5_3_pool1_conv_bn')
              .resize_bilinear(shape, name='conv5_3_pool1_interp'))
 
         (self.feed('conv5_3/relu')
              .avg_pool(45, 45, 45, 45, name='conv5_3_pool2')
-             .conv(1, 1, 512, 1, 1, biased=False, relu=False, name='conv5_3_pool2_conv')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv5_3_pool2_conv')
              .batch_normalization(relu=True, name='conv5_3_pool2_conv_bn')
              .resize_bilinear(shape, name='conv5_3_pool2_interp'))
 
-        (self.feed('conv5_3/relu')
-             .avg_pool(30, 30, 30, 30, name='conv5_3_pool3')
-             .conv(1, 1, 512, 1, 1, biased=False, relu=False, name='conv5_3_pool3_conv')
-             .batch_normalization(relu=True, name='conv5_3_pool3_conv_bn')
-             .resize_bilinear(shape, name='conv5_3_pool3_interp'))
-
-        (self.feed('conv5_3/relu')
-             .avg_pool(15, 15, 15, 15, name='conv5_3_pool6')
-             .conv(1, 1, 512, 1, 1, biased=False, relu=False, name='conv5_3_pool6_conv')
-             .batch_normalization(relu=True, name='conv5_3_pool6_conv_bn')
-             .resize_bilinear(shape, name='conv5_3_pool6_interp'))
 
         (self.feed('conv5_3/relu',
-                   'conv5_3_pool6_interp',
-                   'conv5_3_pool3_interp',
                    'conv5_3_pool2_interp',
                    'conv5_3_pool1_interp')
              .concat(axis=-1, name='conv5_3_concat')
              .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv5_4')
              .batch_normalization(relu=True, name='conv5_4_bn')
+             .resize_bilinear(shape, name='conv5_4_bn_interp'))
+
+        #### 4
+        (self.feed('conv5_3/relu', 
+                    'conv5_4_bn_interp')
+             .concat(axis=-1, name='conv6_4_concat1')
+             .avg_pool(90, 90, 90, 90, name='conv6_4_concat1_pool')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv6_4_concat1_pool_conv')
+             .batch_normalization(relu=True, name='conv6_4_concat1_pool_conv_bn')
+             .resize_bilinear(shape, name='conv6_4_pool1_interp'))
+
+
+        (self.feed('conv5_3/relu', 
+                    'conv5_4_bn_interp')
+             .concat(axis=-1, name='conv6_4_concat2')
+             .avg_pool(45, 45, 45, 45, name='conv6_4_concat2_pool')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv6_4_concat2_pool_conv')
+             .batch_normalization(relu=True, name='conv6_4_concat2_pool_conv_bn')
+             .resize_bilinear(shape, name='conv6_4_pool2_interp'))
+
+
+        (self.feed('conv5_3/relu', 
+                    'conv5_4_bn_interp')
+             .concat(axis=-1, name='conv6_4_concat3')
+             .avg_pool(30, 30, 30, 30, name='conv6_4_concat3_pool')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv6_4_concat3_pool_conv')
+             .batch_normalization(relu=True, name='conv6_4_concat3_pool_conv_bn')
+             .resize_bilinear(shape, name='conv6_4_pool3_interp'))
+
+        (self.feed('conv5_3/relu', 
+                   'conv5_4_bn_interp')
+             .concat(axis=-1, name='conv6_4_concat4')
+             .avg_pool(15, 15, 15, 15, name='conv6_4_concat4_pool')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv6_4_concat4_pool_conv')
+             .batch_normalization(relu=True, name='conv6_4_concat4_pool_conv_bn')
+             .resize_bilinear(shape, name='conv6_4_pool4_interp'))
+
+        (self.feed('conv5_3/relu',
+                   'conv6_4_pool1_interp',
+                   'conv6_4_pool2_interp',
+                   'conv6_4_pool3_interp',
+                   'conv6_4_pool4_interp')
+             .concat(axis=-1, name='conv6_3_concat')
+             .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv6_4')
+             .batch_normalization(relu=True, name='conv6_4_bn')
+             .resize_bilinear(shape, name='con7_4_pool4_interp'))
+
+        #### 2
+        (self.feed('conv5_3/relu',
+                   'con7_4_pool4_interp')
+             .concat(axis=-1, name='conv7_4_concat1')
+             .avg_pool(15, 15, 15, 15, name='conv7_4_pool1')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv7_4_pool1_conv')
+             .batch_normalization(relu=True, name='conv7_4_pool1_conv_bn')
+             .resize_bilinear(shape, name='conv7_4_pool1_interp'))
+
+
+        (self.feed('conv5_3/relu',
+                   'con7_4_pool4_interp')
+             .concat(axis=-1, name='conv7_4_concat2')
+             .avg_pool(30, 30, 30, 30, name='conv7_4_pool2')
+             .conv(1, 1, 256, 1, 1, biased=False, relu=False, name='conv7_4_pool2_conv')
+             .batch_normalization(relu=True, name='conv7_4_pool2_conv_bn')
+             .resize_bilinear(shape, name='conv7_4_pool2_interp'))
+
+        (self.feed('conv5_3/relu',
+                   'conv7_4_pool1_interp',
+                   'conv7_4_pool2_interp')
+             .concat(axis=-1, name='conv8_3_concat')
+             .conv(3, 3, 512, 1, 1, biased=False, relu=False, padding='SAME', name='conv7_4')
+             .batch_normalization(relu=True, name='conv7_4_bn')
              .conv(1, 1, num_classes, 1, 1, biased=True, relu=False, name='conv6'))

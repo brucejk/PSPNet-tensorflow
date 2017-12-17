@@ -202,7 +202,6 @@ def main():
     sess = tf.Session(config=config)
     train_writer = tf.summary.FileWriter( args.tensorboard_dir+ '/train', sess.graph)
     init = tf.global_variables_initializer()
-    
     sess.run(init)
     
     # Saver for storing checkpoints of the model.
