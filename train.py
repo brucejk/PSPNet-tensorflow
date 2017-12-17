@@ -13,6 +13,7 @@ from image_reader import ImageReader
 
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
+LOAD_ALL = 1
 TRAIN_RESNET = False
 BATCH_SIZE = 8
 DATA_DIRECTORY = './datasets'
@@ -138,7 +139,10 @@ def main():
 		'conv7_4_pool1_conv', 'conv7_4_pool2_conv', 'conv7_4', 'conv6']
 
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
-    restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
+    if LOAD_ALL == 1:
+        restore_var = [v for v in tf.global_variables()]
+    else:
+        restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
     fc_trainable = [v for v in all_trainable if v.name.split('/')[0] in fc_list]
     conv_trainable = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # lr * 1.0
     fc_w_trainable = [v for v in fc_trainable if 'weights' in v.name] # lr * 10.0
