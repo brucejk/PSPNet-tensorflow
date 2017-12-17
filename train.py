@@ -124,7 +124,8 @@ def main():
                  args.random_scale,
                  args.random_mirror,
                  args.ignore_label,
-                 IMG_MEAN, coord) image_batch, label_batch = reader.dequeue(args.batch_size) 
+                 IMG_MEAN, coord) 
+        image_batch, label_batch = reader.dequeue(args.batch_size) 
     net = PSPNet({'data': image_batch}, is_training=False, num_classes=args.num_classes)
     
     raw_output = net.layers['conv6']
