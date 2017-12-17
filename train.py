@@ -131,6 +131,7 @@ def main():
     raw_output = net.layers['conv6']
     
     # According from the prototxt in Caffe implement, learning rate must multiply by 10.0 in pyramid module
+
     fc_list = ['conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_4',
                'conv6_4_concat1_pool_conv', 'conv6_4_concat2_pool_conv',
                'conv6_4_concat3_pool_conv', 'conv6_4_concat4_pool_conv', 'conv6_4',
