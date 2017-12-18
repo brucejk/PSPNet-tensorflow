@@ -13,8 +13,9 @@ from image_reader import ImageReader
 
 IMG_MEAN = np.array((103.939, 116.779, 123.68), dtype=np.float32)
 
+LOAD_ALL = True
 TRAIN_RESNET = False
-BATCH_SIZE = 8
+BATCH_SIZE = 16
 DATA_DIRECTORY = './datasets'
 DATA_LIST_PATH = './list/train_list.txt'
 IGNORE_LABEL = 255
@@ -27,9 +28,13 @@ POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
-SNAPSHOT_DIR = './ganlu_model/'
+SNAPSHOT_DIR = './resnet24_model/'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
+
+SAVE_GRAPH = 10
+LOG_DIR = './ganlu_log'
+EVENT = '/resnet24'
 
 
 def get_arguments():
@@ -80,6 +85,10 @@ def get_arguments():
                         help="whether to get update_op from tf.Graphic_Keys")
     parser.add_argument("--train-beta-gamma", action="store_true",
                         help="whether to train beta & gamma in bn layer")
+    parser.add_argument("--tensorboard-dir", type=str, default=LOG_DIR,
+			help="Where to save summaries.")
+    parser.add_argument("--save-graph", type=int, default=SAVE_GRAPH,
+			help="Save summaries and checkpoint every often.")
     return parser.parse_args()
 
 def save(saver, sess, logdir, step):
@@ -126,7 +135,10 @@ def main():
     fc_list = ['conv4_24_pool1_conv', 'conv4_24_pool2_conv', 'conv4_24_pool3_conv',
     'conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_3_pool3_conv', 'conv5_3_pool6_conv', 'conv6', 'conv5_4']
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
-    restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
+    if LOAD_ALL == True:
+    	restore_var = [v for v in tf.global_variables()]
+    else:
+	restore_var = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # do NOT load non-resnet variables
     fc_trainable = [v for v in all_trainable if v.name.split('/')[0] in fc_list]
     conv_trainable = [v for v in all_trainable if v.name.split('/')[0] not in fc_list] # lr * 1.0
     fc_w_trainable = [v for v in fc_trainable if 'weights' in v.name] # lr * 10.0
@@ -149,11 +161,13 @@ def main():
     else:
 	l2_losses = [args.weight_decay * tf.nn.l2_loss(v) for v in fc_w_trainable]
     reduced_loss = tf.reduce_mean(loss) + tf.add_n(l2_losses)
+    tf.summary.scalar('reduced_loss', reduced_loss)
 
     # Using Poly learning rate policy 
     base_lr = tf.constant(args.learning_rate)
     step_ph = tf.placeholder(dtype=tf.float32, shape=())
     learning_rate = tf.scalar_mul(base_lr, tf.pow((1 - step_ph / args.num_steps), args.power))
+    tf.summary.scalar('learning_rate', learning_rate)
     
     # Gets moving_mean and moving_variance update operations from tf.GraphKeys.UPDATE_OPS
     if args.update_mean_var == False:
@@ -188,7 +202,10 @@ def main():
     # Set up tf session and initialize variables. 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
+    merged = tf.summary.merge_all()
+
     sess = tf.Session(config=config)
+    train_writer = tf.summary.FileWriter(args.tensorboard_dir + EVENT, sess.graph)
     init = tf.global_variables_initializer()
     
     sess.run(init)
@@ -209,13 +226,16 @@ def main():
     threads = tf.train.start_queue_runners(coord=coord, sess=sess)
 
     # Iterate over training steps.
-    for step in range(args.num_steps):
+    for step in range(load_step, args.num_steps):
         start_time = time.time()
         
         feed_dict = {step_ph: step}
         if step % args.save_pred_every == 0:
             loss_value, _ = sess.run([reduced_loss, train_op], feed_dict=feed_dict)
             save(saver, sess, args.snapshot_dir, step)
+        if step % args.save_graph == 0:
+            summary, _ = sess.run([merged, train_op], feed_dict=feed_dict)
+            train_writer.add_summary(summary, step)
         else:
             loss_value, _ = sess.run([reduced_loss, train_op], feed_dict=feed_dict)
         duration = time.time() - start_time
@@ -223,6 +243,7 @@ def main():
         
     coord.request_stop()
     coord.join(threads)
+    train_writer.close()
     
 if __name__ == '__main__':
     main()

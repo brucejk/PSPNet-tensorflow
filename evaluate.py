@@ -19,7 +19,7 @@ SAVE_DIR = './output/'
 SNAPSHOT_DIR = './ganlu_model/'
 
 DATA_DIRECTORY = './datasets'
-DATA_LIST_PATH = './list/eval_list.txt'
+DATA_LIST_PATH = './list/train_list.txt'
 
 num_classes = 19
 ignore_label = 255 # Don't care label
