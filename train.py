@@ -28,13 +28,13 @@ POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
-SNAPSHOT_DIR = './complex_model/'
+SNAPSHOT_DIR = './auto_model/'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
 SAVE_GRAPH = 10 
 LOG_DIR = './tensorboard_log'
-EVNET = '/bruce_complex'
+EVNET = '/bruce_auto'
 
 
 def get_arguments():
@@ -134,11 +134,9 @@ def main():
     
     # According from the prototxt in Caffe implement, learning rate must multiply by 10.0 in pyramid module
 
-    fc_list = ['conv5_3_pool1_conv', 'conv5_3_pool2_conv', 'conv5_4',
-               'conv6_3_pool1_conv', 'conv6_3_pool2_conv', 'conv6_4',
-               'conv6_4_concat1_pool_conv', 
-               'conv6_4_concat3_pool_conv', 'conv6_4_concat4_pool_conv', 'conv7_4',
-               'conv7_4_pool1_conv','conv7_4_pool2_conv', 'conv8_4', 'conv6']
+    fc_list = ['fc0','fc1','fc2','fc3','fc4','fc5','fc6','fc7','fc8','fc9','fc10',
+               'fc11','fc12','fc13', 'conv5_3_pool1_interp',
+               'conv5_3_pool2_interp','conv5_4', 'conv6']
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
     if LOAD_ALL == 1:
         restore_var = [v for v in tf.global_variables()]
