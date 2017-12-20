@@ -438,7 +438,9 @@ class PSPNet(Network):
 
         (self.feed('conv5_3/relu')
              .conv(1, 1, 60, 1, 1, biased=True, relu=True, name='fc0')
+             .conv(1, 1, 30, 1, 1, biased=True, relu=True, name='fc1')
              .conv(1, 1, 20, 1, 1, biased=True, relu=True, name='fc2')
+             .conv(1, 1, 30, 1, 1, biased=True, relu=True, name='fc3')
              .conv(1, 1, 60, 1, 1, biased=True, relu=True, name='fc4')
              .resize_bilinear(shape, name='conv5_3_pool1_interp'))
 

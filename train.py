@@ -134,7 +134,7 @@ def main():
     
     # According from the prototxt in Caffe implement, learning rate must multiply by 10.0 in pyramid module
 
-    fc_list = ['fc0','fc2','fc4','fc5','fc7','fc9',
+    fc_list = ['fc0','fc1', 'fc2','fc3','fc4','fc5','fc7','fc9',
                'fc11','fc13', 'conv5_3_pool1_interp',
                'conv5_3_pool2_interp','conv5_4', 'conv6']
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
