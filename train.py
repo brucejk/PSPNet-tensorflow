@@ -28,18 +28,18 @@ POWER = 0.9
 RANDOM_SEED = 1234
 WEIGHT_DECAY = 0.0001
 RESTORE_FROM = './'
-SNAPSHOT_DIR = './auto_model/'
+SNAPSHOT_DIR = './atrous_model/'
 SAVE_NUM_IMAGES = 4
 SAVE_PRED_EVERY = 50
 
 SAVE_GRAPH = 10 
 LOG_DIR = './tensorboard_log'
-EVNET = '/bruce_auto'
+EVNET = '/bruce_atrous'
 
 
 def get_arguments():
     parser = argparse.ArgumentParser(description="DeepLab-ResNet Network")
-    parser.add_argument("--train-resnet", type=bool, default=True,
+    parser.add_argument("--train-resnet", type=bool, default=TRAIN_RESNET,
 			help="Whether to fine-tune ResNet weights.")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE,
                         help="Number of images sent to the network in one step.")
@@ -134,9 +134,8 @@ def main():
     
     # According from the prototxt in Caffe implement, learning rate must multiply by 10.0 in pyramid module
 
-    fc_list = ['fc0','fc1','fc2','fc3','fc4','fc5','fc6','fc7','fc8','fc9','fc10',
-               'fc11','fc12','fc13', 'conv5_3_pool1_interp',
-               'conv5_3_pool2_interp','conv5_4', 'conv6']
+    fc_list = ['atc1', 'atc2', 'atc3', 'atc4', 'conv5_4', 'conv6']
+    # fc_list = []
     all_trainable = [v for v in tf.trainable_variables() if ('beta' not in v.name and 'gamma' not in v.name) or args.train_beta_gamma]
     if LOAD_ALL == 1:
         restore_var = [v for v in tf.global_variables()]
