@@ -438,21 +438,15 @@ class PSPNet(Network):
 
         (self.feed('conv5_3/relu')
              .conv(1, 1, 60, 1, 1, biased=True, relu=True, name='fc0')
-             .conv(1, 1, 30, 1, 1, biased=True, relu=True, name='fc1')
-             .conv(1, 1, 10, 1, 1, biased=True, relu=True, name='fc2')
-             .conv(1, 1, 30, 1, 1, biased=True, relu=True, name='fc3')
+             .conv(1, 1, 20, 1, 1, biased=True, relu=True, name='fc2')
              .conv(1, 1, 60, 1, 1, biased=True, relu=True, name='fc4')
              .resize_bilinear(shape, name='conv5_3_pool1_interp'))
 
         (self.feed('conv5_3/relu')
              .conv(1, 1, 75, 1, 1, biased=True, relu=True, name='fc5')
-             .conv(1, 1, 60, 1, 1, biased=True, relu=True, name='fc6')
              .conv(1, 1, 45, 1, 1, biased=True, relu=True, name='fc7')
-             .conv(1, 1, 30, 1, 1, biased=True, relu=True, name='fc8')
              .conv(1, 1, 15, 1, 1, biased=True, relu=True, name='fc9')
-             .conv(1, 1, 30, 1, 1, biased=True, relu=True, name='fc10')
              .conv(1, 1, 45, 1, 1, biased=True, relu=True, name='fc11')
-             .conv(1, 1, 60, 1, 1, biased=True, relu=True, name='fc12')
              .conv(1, 1, 75, 1, 1, biased=True, relu=True, name='fc13')
              .resize_bilinear(shape, name='conv5_3_pool2_interp'))
 
